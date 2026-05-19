@@ -15,7 +15,6 @@ window.APP_CONFIG = {
         'CERTIFICATO.pdf',
         'CONSENSO BTX-IAL.pdf',
         'CONSENSO MINORENNI.pdf'
-        'MODULO PRP.pdf',
     ],
 
     // Categoria: SCHEDE (Selezione granulare)
