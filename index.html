@@ -794,6 +794,40 @@
 <body>
 
   <!-- Animated Background -->
+  <!-- POPUP POLITECH -->
+  <div id="politech-popup-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:32px; width:440px; max-width:90vw; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <h3 style="font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--accent-primary); margin-bottom:20px; text-transform:uppercase; letter-spacing:0.8px;">📋 Dati aggiuntivi Politech</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">Tutti i campi sono facoltativi</p>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="dati-input-group">
+          <span class="dati-input-label">CAP</span>
+          <input class="dati-input" id="politech-cap" type="text" placeholder="20122">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Codice Fiscale</span>
+          <input class="dati-input" id="politech-cf" type="text" placeholder="RSSMRA80A01H501U">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">P.IVA</span>
+          <input class="dati-input" id="politech-piva" type="text" placeholder="12345678901">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Email</span>
+          <input class="dati-input" id="politech-email" type="text" placeholder="mario@email.com">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Cellulare</span>
+          <input class="dati-input" id="politech-cellulare" type="text" placeholder="3331234567">
+        </div>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button id="politech-popup-skip" style="flex:1; padding:14px; border-radius:12px; border:2px solid rgba(0,0,0,0.2); background:white; font-family:var(--font-display); font-weight:600; font-size:0.9rem; cursor:pointer; color:var(--text-muted);">Salta</button>
+        <button id="politech-popup-confirm" style="flex:2; padding:14px; border-radius:12px; border:none; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color:white; font-family:var(--font-display); font-weight:600; font-size:0.9rem; cursor:pointer;">Conferma e Stampa</button>
+      </div>
+    </div>
+  </div>
+
   <div class="bg-animation">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -1255,6 +1289,43 @@
       applyDateMask('paz-data-nascita');
       applyDateMask('paz-data-intervento');
 
+      // --- POPUP POLITECH ---
+      let pazPolitechCap = '';
+      let pazPolitechCf = '';
+      let pazPolitechPiva = '';
+      let pazPolitechEmail = '';
+      let pazPolitechCellulare = '';
+      let politechPopupResolveFn = null;
+
+      function showPolitechPopup() {
+        return new Promise((resolve) => {
+          politechPopupResolveFn = resolve;
+          const overlay = document.getElementById('politech-popup-overlay');
+          overlay.style.display = 'flex';
+          document.getElementById('politech-cap').value = '';
+          document.getElementById('politech-cf').value = '';
+          document.getElementById('politech-piva').value = '';
+          document.getElementById('politech-email').value = '';
+          document.getElementById('politech-cellulare').value = '';
+        });
+      }
+
+      document.getElementById('politech-popup-confirm').addEventListener('click', () => {
+        pazPolitechCap = document.getElementById('politech-cap').value.trim();
+        pazPolitechCf = document.getElementById('politech-cf').value.trim();
+        pazPolitechPiva = document.getElementById('politech-piva').value.trim();
+        pazPolitechEmail = document.getElementById('politech-email').value.trim();
+        pazPolitechCellulare = document.getElementById('politech-cellulare').value.trim();
+        document.getElementById('politech-popup-overlay').style.display = 'none';
+        if (politechPopupResolveFn) politechPopupResolveFn(true);
+      });
+
+      document.getElementById('politech-popup-skip').addEventListener('click', () => {
+        pazPolitechCap = pazPolitechCf = pazPolitechPiva = pazPolitechEmail = pazPolitechCellulare = '';
+        document.getElementById('politech-popup-overlay').style.display = 'none';
+        if (politechPopupResolveFn) politechPopupResolveFn(false);
+      });
+
       printBtn.addEventListener('click', async () => {
         if (!window.APP_CONFIG) {
           setStatus('Errore: config.js mancante o non valido.', 'error');
@@ -1328,6 +1399,11 @@
           setStatus('Errore: Nessun file configurato nel sistema.', 'error');
           progressContainer.classList.add('visible');
           return;
+        }
+
+        // Mostra popup Politech se il modulo è incluso
+        if (files.includes('MODULO POLITECH X INTERVENTI.pdf')) {
+          await showPolitechPopup();
         }
 
         const totalFiles = files.length;
@@ -1454,11 +1530,16 @@
                 0: [
                   [pazNome, 68, 357],
                   [pazCognome, 336, 357],
-                  [pazDataIntervento, 348, 127],
-                  [pazLuogoNascita, 101, 382],
-                  [pazDataNascita, 350, 382],
-                  [pazVia, 58, 423],
-                  [pazCitta, 99, 443]
+                  [pazDataIntervento, 348, 122],
+                  [pazLuogoNascita, 101, 377],
+                  [pazDataNascita, 350, 377],
+                  [pazVia, 58, 418],
+                  [pazCitta, 99, 438],
+                  [pazPolitechCap, 350, 438],
+                  [pazPolitechCf, 58, 458],
+                  [pazPolitechPiva, 350, 458],
+                  [pazPolitechEmail, 58, 478],
+                  [pazPolitechCellulare, 58, 498]
                 ]
               },
             };
