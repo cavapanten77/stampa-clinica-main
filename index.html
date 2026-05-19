@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modulistica – Cosmedic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="config.js"></script>
+  <style>
+    /* RESET & BASE */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Light Theme Palettes */
+      --bg-base: #FFFFFF;
+      --bg-gradient-1: #F8FAFC;
+      --bg-gradient-2: #F1F5F9;
+
+      /* Glassmorphism Surface (Light - Enhanced Contrast) */
+      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(0, 0, 0, 0.15);
+      --glass-highlight: rgba(255, 255, 255, 0.9);
+      --glass-shadow: 0 30px 60px -12px rgba(15, 23, 42, 0.15);
+
+      /* Accents */
+      --accent-primary: #2563EB;
+      --accent-secondary: #7C3AED;
+      --accent-tertiary: #DB2777;
+
+      /* Status */
+      --success: #059669;
+      --error: #DC2626;
+
+      /* Text */
+      --text-main: #020617;
+      /* Even deeper slate for maximum readability */
+      --text-muted: #334155;
+
+      /* Typography */
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: row;
+      position: relative;
+    }
+
+    /* MESH GRADIENT BACKGROUND ANIMATION */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      overflow: hidden;
+      background: var(--bg-base);
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.35;
+      animation: float 20s infinite ease-in-out alternate;
+    }
+
+    .orb-1 {
+      width: 40vw;
+      height: 40vw;
+      background: var(--accent-primary);
+      top: -10%;
+      left: -10%;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 50vw;
+      height: 50vw;
+      background: var(--accent-secondary);
+      bottom: -20%;
+      right: -10%;
+      animation-duration: 25s;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 30vw;
+      height: 30vw;
+      background: rgba(45, 212, 191, 0.4);
+      /* Teal */
+      top: 40%;
+      left: 60%;
+      animation-duration: 30s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(5%, 10%) scale(1.1);
+      }
+
+      100% {
+        transform: translate(-5%, -5%) scale(0.95);
+      }
+    }
+
+    /* ===================== HORIZONTAL LAYOUT ===================== */
+
+    /* LEFT SIDEBAR */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 20;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.1s forwards cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* MAIN CONTENT AREA */
+    .main-content {
+      flex: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 32px 40px;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.25s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* SIDEBAR HEADER */
+    .sidebar-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .logo-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-area:hover {
+      transform: scale(1.02);
+    }
+
+    .logo-area img {
+      width: 100%;
+      max-width: 220px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.05));
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    h1 .gradient-text {
+      background: linear-gradient(to right, #60a5fa, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+    }
+
+    /* GLASSMORPHISM PANEL (main content) */
+    .glass-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: var(--glass-shadow);
+      position: relative;
+    }
+
+    /* Inner subtle glow */
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, var(--glass-highlight) 0%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* Scrollable panel content */
+    .panel-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .panel-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .panel-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .panel-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 999px;
+    }
+
+    /* FORM ELEMENTS */
+    .form-group {
+      text-align: left;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* CUSTOM SELECT */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '▾';
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      transition: transform 0.3s;
+    }
+
+    .select-wrapper:hover::after {
+      color: var(--text-main);
+      transform: translateY(-50%) scale(1.2);
+    }
+
+    select {
+      width: 100%;
+      padding: 18px 20px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2.2px solid rgba(0, 0, 0, 0.3);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      appearance: none;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    select:hover,
+    select:focus {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+    }
+
+    /* PREMIUM BUTTON */
+    .btn-super {
+      position: relative;
+      width: 100%;
+      border: 2.2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    /* Hover Sweep Effect */
+    .btn-super::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s ease;
+      z-index: -1;
+    }
+
+    .btn-super:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-super:hover::after {
+      left: 100%;
+    }
+
+    .btn-super:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-super:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-icon {
+      margin-right: 10px;
+      font-size: 1.3rem;
+      vertical-align: middle;
+    }
+
+    /* PROGRESS BAR */
+    .progress-container {
+      margin-top: 30px;
+      opacity: 0;
+      height: 0;
+      transition: all 0.4s ease;
+      overflow: hidden;
+      z-index: 2;
+      position: relative;
+    }
+
+    .progress-container.visible {
+      opacity: 1;
+      height: auto;
+      margin-top: 30px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3b82f6, #ec4899);
+      border-radius: 999px;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+      position: relative;
+    }
+
+    /* Animated shine on progress */
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: progress-shine 2s infinite linear;
+    }
+
+    @keyframes progress-shine {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    /* STATUS TEXT */
+    #status {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 16px;
+      min-height: 24px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .status-error {
+      color: var(--error) !important;
+    }
+
+    .status-success {
+      color: var(--success) !important;
+    }
+
+    /* FOOTER (sidebar bottom) */
+    footer {
+      margin-top: auto;
+      padding-top: 20px;
+      color: rgba(0, 0, 0, 0.3);
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    /* CHECKBOX GRID FOR BASE DOCS */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    /* CUSTOM CHECKBOX */
+    .checkbox-wrapper {
+      display: flex;
+      align-items: flex-start;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.02);
+      border: 2.2px solid rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .checkbox-wrapper:hover {
+      background: rgba(255, 255, 255, 0.85);
+      border-color: rgba(37, 99, 235, 0.2);
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      min-width: 20px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border: 2.2px solid rgba(0, 0, 0, 0.45);
+      border-radius: 6px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"]::after {
+      content: '✓';
+      font-family: inherit;
+      color: white;
+      font-size: 14px;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .checkbox-label-text {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      line-height: 1.3;
+      user-select: none;
+    }
+
+    /* SIDEBAR TABS NAV (vertical) */
+    .tabs-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tab-btn {
+      width: 100%;
+      text-align: left;
+      background: rgba(0, 0, 0, 0.04);
+      border: 2.2px solid rgba(0, 0, 0, 0.3);
+      color: var(--text-muted);
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tab-btn .tab-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .tab-btn:hover {
+      background: rgba(0, 0, 0, 0.08);
+      color: var(--text-main);
+      border-color: rgba(0, 0, 0, 0.2);
+      transform: translateX(3px);
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.5);
+      transform: translateX(0);
+    }
+
+    /* Main area panel title */
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 24px;
+      background: linear-gradient(to right, #60a5fa, #c084fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeUp 0.35s ease forwards;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .panel-desc {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      background: rgba(0, 0, 0, 0.03);
+      padding: 16px;
+      border-radius: 12px;
+      border-left: 4px solid var(--accent-secondary);
+    }
+
+    /* PATIENT DATA OVERLAY */
+    .dati-paziente-toggle {
+      width: 100%;
+      text-align: left;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(124, 58, 237, 0.08));
+      border: 2.2px solid rgba(37, 99, 235, 0.25);
+      color: var(--accent-primary);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .dati-paziente-toggle:hover {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(124, 58, 237, 0.14));
+    }
+
+    .dati-paziente-toggle .toggle-arrow {
+      transition: transform 0.3s ease;
+      font-style: normal;
+    }
+
+    .dati-paziente-toggle.open .toggle-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* OVERLAY that slides over the sidebar content */
+    .dati-paziente-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100;
+      transform: translateX(-110%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .dati-paziente-overlay.open {
+      transform: translateX(0);
+    }
+
+    .overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(37, 99, 235, 0.15);
+    }
+
+    .overlay-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .overlay-close {
+      background: rgba(0, 0, 0, 0.06);
+      border: 2.2px solid rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .overlay-close:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--text-main);
+    }
+
+    .dati-paziente-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dati-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .dati-input-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding-left: 2px;
+    }
+
+    .dati-input {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2.2px solid rgba(0, 0, 0, 0.2);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .dati-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .dati-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Bottom action bar */
+    .action-bar {
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      margin-top: 20px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-area">
+        <img src="logo cosmedic definitivo (1).png" alt="Cosmedic Logo">
+      </div>
+      <h1><span class="gradient-text">Modulistica</span></h1>
+      <p class="subtitle">Cosmedic SRL</p>
+    </div>
+
+    <!-- DATI PAZIENTE OVERLAY -->
+    <div class="dati-paziente-overlay" id="dati-paziente-overlay">
+      <div class="overlay-header">
+        <span class="overlay-title">🧑‍⚕️ Dati Paziente</span>
+        <button class="overlay-close" id="dati-paziente-close">✕ Chiudi</button>
+      </div>
+      <div class="dati-paziente-inner">
+        <div class="dati-row">
+          <div class="dati-input-group">
+            <span class="dati-input-label">Cognome</span>
+            <input class="dati-input" id="paz-cognome" type="text" placeholder="Rossi">
+          </div>
+          <div class="dati-input-group">
+            <span class="dati-input-label">Nome</span>
+            <input class="dati-input" id="paz-nome" type="text" placeholder="Mario">
+          </div>
+        </div>
+        <div class="dati-row">
+          <div class="dati-input-group">
+            <span class="dati-input-label">Data nascita</span>
+            <input class="dati-input" id="paz-data-nascita" type="text" placeholder="01/01/1980">
+          </div>
+          <div class="dati-input-group">
+            <span class="dati-input-label">Sesso</span>
+            <input class="dati-input" id="paz-sesso" type="text" placeholder="M/F" maxlength="1">
+          </div>
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Luogo di nascita</span>
+          <input class="dati-input" id="paz-luogo-nascita" type="text" placeholder="Roma">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Città Residenza</span>
+          <input class="dati-input" id="paz-citta" type="text" placeholder="Milano">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Diagnosi</span>
+          <input class="dati-input" id="paz-diagnosi" type="text" placeholder="...">
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Intervento proposto</span>
+          <input class="dati-input" id="paz-intervento" type="text" placeholder="..." list="interventi-list">
+          <datalist id="interventi-list"></datalist>
+        </div>
+        <div class="dati-input-group">
+          <span class="dati-input-label">Data intervento</span>
+          <input class="dati-input" id="paz-data-intervento" type="text" placeholder="dd/mm/yyyy">
+        </div>
+      </div>
+    </div>
+
+    <!-- DATI PAZIENTE TOGGLE BUTTON -->
+    <button class="dati-paziente-toggle" id="dati-paziente-toggle">
+      <span>🧑‍⚕️ Dati Paziente</span>
+      <i class="toggle-arrow">▾</i>
+    </button>
+
+    <!-- TABS NAVIGATION (vertical) -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="tab-schede"><span class="tab-icon">📋</span>Schede</button>
+      <button class="tab-btn" data-tab="tab-interventi"><span class="tab-icon">🏥</span>Interventi</button>
+      <button class="tab-btn" data-tab="tab-aicpe"><span class="tab-icon">📝</span>Consensi AICPE</button>
+      <button class="tab-btn" data-tab="tab-locale"><span class="tab-icon">🏠</span>Interventi in Locale</button>
+      <button class="tab-btn" data-tab="tab-advisor"><span class="tab-icon">💼</span>Advisor</button>
+      <button class="tab-btn" data-tab="tab-liberatorie"><span class="tab-icon">📄</span>Liberatorie</button>
+      <button class="tab-btn" data-tab="tab-certificati"><span class="tab-icon">🎓</span>Certificati</button>
+    </nav>
+
+    <footer>&copy; 2026 Cosmedic SRL</footer>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="glass-card">
+      <!-- Scrollable panel area -->
+      <div class="panel-scroll">
+
+        <!-- TAB 1: SCHEDE -->
+        <div id="tab-schede" class="tab-panel active">
+          <h2 class="panel-title">📋 Schede</h2>
+          <div class="form-group">
+            <label class="form-label">Seleziona liberamente i documenti da unire:</label>
+            <div id="schede-checkboxes" class="checkbox-grid">
+              <!-- Injected Checkboxes -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: INTERVENTI -->
+        <div id="tab-interventi" class="tab-panel">
+          <h2 class="panel-title">🏥 Interventi</h2>
+          <div class="form-group" id="clinic-group">
+            <label class="form-label" for="clinic-select">Sede Intervento</label>
+            <div class="select-wrapper">
+              <select id="clinic-select">
+                <option value="cosmedic">Studio COSMEDIC (Standard)</option>
+                <option value="external">Altre Cliniche (Rimuove Anestesia, Aggiunge IBAN)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="intervention-group">
+            <label class="form-label">Intervento Specifico (Seleziona uno o più)</label>
+            <div id="intervention-specific-checkboxes" class="checkbox-grid">
+              <!-- Injected Checkboxes -->
+            </div>
+          </div>
+          <div class="form-group" id="base-docs-group">
+            <label class="form-label">Documenti Base</label>
+            <div id="interventi-checkboxes" class="checkbox-grid">
+              <!-- Injected Checkboxes -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: CONSENSI AICPE -->
+        <div id="tab-aicpe" class="tab-panel">
+          <h2 class="panel-title">📝 Consensi AICPE</h2>
+          <div class="form-group">
+            <label class="form-label" for="aicpe-select">Scegli il Consenso AICPE da stampare singolarmente</label>
+            <div class="select-wrapper">
+              <select id="aicpe-select">
+                <option value="">Seleziona un consenso...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: INTERVENTI IN LOCALE -->
+        <div id="tab-locale" class="tab-panel">
+          <h2 class="panel-title">🏠 Interventi in Locale</h2>
+          <p class="panel-desc">Questa sezione genera automaticamente un pacchetto contenente esclusivamente:<br>
+            <strong>3 Consenso Generico, 6 Tabella Medicazioni, 7 Chirurgia ambulatoriale</strong>.
+          </p>
+        </div>
+
+        <!-- TAB 5: ADVISOR -->
+        <div id="tab-advisor" class="tab-panel">
+          <h2 class="panel-title">💼 Advisor</h2>
+          <p class="panel-desc">Questa sezione genera automaticamente un pacchetto contenente esclusivamente:<br>
+            <strong>0 SCHEDA ANAGRAFICA, CONSENSO BTX-IAL</strong>.
+          </p>
+        </div>
+
+        <!-- TAB 6: LIBERATORIE -->
+        <div id="tab-liberatorie" class="tab-panel">
+          <h2 class="panel-title">📄 Liberatorie</h2>
+          <p class="panel-desc">Seleziona le liberatorie da stampare:</p>
+          <div id="liberatorie-checkboxes" class="checkbox-grid"></div>
+        </div>
+
+        <!-- TAB 7: CERTIFICATI -->
+        <div id="tab-certificati" class="tab-panel">
+          <h2 class="panel-title">🎓 Certificati</h2>
+          <p class="panel-desc">Seleziona i certificati da stampare:</p>
+          <div id="certificati-checkboxes" class="checkbox-grid"></div>
+        </div>
+
+      </div><!-- end panel-scroll -->
+
+      <!-- ACTION BAR (sempre visibile in basso) -->
+      <div class="action-bar">
+        <button class="btn-super" id="print-btn">
+          <span class="btn-icon">🖨️</span> Genera e Stampa Documenti
+        </button>
+
+        <div class="progress-container" id="progress-container">
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <p id="status"></p>
+        </div>
+      </div><!-- end action-bar -->
+    </div><!-- end glass-card -->
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const printBtn = document.getElementById('print-btn');
+      const statusEl = document.getElementById('status');
+      const progressContainer = document.getElementById('progress-container');
+      const progressFill = document.getElementById('progress-fill');
+
+      const tabs = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      const schedeCheckboxes = document.getElementById('schede-checkboxes');
+
+      const clinicSelect = document.getElementById('clinic-select');
+      const interventiCheckboxes = document.getElementById('interventi-checkboxes');
+      const interventionSpecificCheckboxes = document.getElementById('intervention-specific-checkboxes');
+
+      const aicpeSelect = document.getElementById('aicpe-select');
+
+      // --- DATI PAZIENTE OVERLAY ---
+      const dpToggle = document.getElementById('dati-paziente-toggle');
+      const dpOverlay = document.getElementById('dati-paziente-overlay');
+      const dpClose = document.getElementById('dati-paziente-close');
+
+      dpToggle.addEventListener('click', () => {
+        dpToggle.classList.add('open');
+        dpOverlay.classList.add('open');
+      });
+
+      dpClose.addEventListener('click', () => {
+        dpToggle.classList.remove('open');
+        dpOverlay.classList.remove('open');
+      });
+
+      // 1. TABS LOGIC
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+
+          tab.classList.add('active');
+          document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+      });
+
+      // 2. BUILD UI DYNAMICALLY FROM config.js
+      if (window.APP_CONFIG) {
+        // Popola Datalist Interventi nell'overlay per autocompletamento
+        const interventiList = document.getElementById('interventi-list');
+        if (interventiList && window.APP_CONFIG.INTERVENTIONS) {
+          interventiList.innerHTML = '';
+          Object.keys(window.APP_CONFIG.INTERVENTIONS).forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            interventiList.appendChild(opt);
+          });
+        }
+        // TAB 1: SCHEDE (Tutti i file di base selezionabili liberamente, spenti di default)
+        if (window.APP_CONFIG.SCHEDE_FILES) {
+          window.APP_CONFIG.SCHEDE_FILES.forEach(f => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = f;
+            checkbox.className = 'tab1-checkbox';
+
+            const span = document.createElement('span');
+            span.className = 'checkbox-label-text';
+            span.textContent = f.replace('.pdf', '');
+
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            schedeCheckboxes.appendChild(label);
+          });
+        }
+
+        // TAB 2: INTERVENTI (Documenti 1-6 spuntati di default, resto spento)
+        if (window.APP_CONFIG.PDF_FILES) {
+          window.APP_CONFIG.PDF_FILES.forEach(f => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = f;
+            checkbox.className = 'tab2-checkbox';
+
+            if (f.startsWith('1 ') || f.startsWith('2 ') || f.startsWith('3 ') ||
+              f.startsWith('4 ') || f.startsWith('5 ') || f.startsWith('6 ')) {
+              checkbox.checked = true;
+            }
+
+            const span = document.createElement('span');
+            span.className = 'checkbox-label-text';
+            span.textContent = f.replace('.pdf', '');
+
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            interventiCheckboxes.appendChild(label);
+          });
+        }
+
+        // TAB 2 & 3: INTERVENTI AICPE
+        if (window.APP_CONFIG.INTERVENTIONS) {
+          const interventionsList = Object.keys(window.APP_CONFIG.INTERVENTIONS).sort();
+          interventionsList.forEach(name => {
+            // Checkbox per Tab 2
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = window.APP_CONFIG.INTERVENTIONS[name];
+            checkbox.dataset.name = name;
+            checkbox.className = 'tab2-intervention-specific-checkbox';
+            const span = document.createElement('span');
+            span.className = 'checkbox-label-text';
+            span.textContent = name;
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            interventionSpecificCheckboxes.appendChild(label);
+
+            // Dropdown per Tab 3 (mantenuto dropdown per stampa singola)
+            const opt2 = document.createElement('option');
+            opt2.value = window.APP_CONFIG.INTERVENTIONS[name];
+            opt2.textContent = name;
+            aicpeSelect.appendChild(opt2);
+          });
+        }
+        // TAB 6: LIBERATORIE
+        const liberatorieCheckboxes = document.getElementById('liberatorie-checkboxes');
+        if (window.APP_CONFIG.LIBERATORIE_FILES) {
+          window.APP_CONFIG.LIBERATORIE_FILES.forEach(f => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = f;
+            checkbox.className = 'tab6-checkbox';
+            const span = document.createElement('span');
+            span.className = 'checkbox-label-text';
+            span.textContent = f.replace('.pdf', '');
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            liberatorieCheckboxes.appendChild(label);
+          });
+        }
+
+        // TAB 7: CERTIFICATI
+        const certificatiCheckboxes = document.getElementById('certificati-checkboxes');
+        if (window.APP_CONFIG.CERTIFICATI_FILES) {
+          window.APP_CONFIG.CERTIFICATI_FILES.forEach(f => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-wrapper';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = f;
+            checkbox.className = 'tab7-checkbox';
+            const span = document.createElement('span');
+            span.className = 'checkbox-label-text';
+            span.textContent = f.replace('.pdf', '');
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            certificatiCheckboxes.appendChild(label);
+          });
+        }
+      }
+
+      // Handle Intervention Selection in TAB 2 (Auto-select docs)
+      interventionSpecificCheckboxes.addEventListener('change', (e) => {
+        if (!e.target.classList.contains('tab2-intervention-specific-checkbox')) return;
+
+        const checkboxes = document.querySelectorAll('.tab2-checkbox');
+        const selectedSpecifics = document.querySelectorAll('.tab2-intervention-specific-checkbox:checked');
+
+        // Reset checkboxes to default state based on clinic
+        const isExternal = clinicSelect.value === 'external';
+        checkboxes.forEach(cb => {
+          if (cb.value.startsWith('1 ') || cb.value.startsWith('2 ') || cb.value.startsWith('3 ') ||
+            cb.value.startsWith('4 ') || cb.value.startsWith('5 ') || cb.value.startsWith('6 ')) {
+            cb.checked = true;
+          } else {
+            cb.checked = false;
+          }
+
+          if (cb.value === window.APP_CONFIG.ANESTESIA_PDF && isExternal) {
+            cb.checked = false;
+          }
+          if (cb.value === window.APP_CONFIG.IBAN_PDF && isExternal) {
+            cb.checked = true;
+          }
+        });
+
+        // Add additional logic if needed for breast interventions (Protesi)
+        selectedSpecifics.forEach(specCb => {
+          const name = specCb.dataset.name;
+          if (window.APP_CONFIG.BREAST_INTERVENTIONS_REQUIRING_PROTESI &&
+            window.APP_CONFIG.BREAST_INTERVENTIONS_REQUIRING_PROTESI.includes(name)) {
+            checkboxes.forEach(cb => {
+              if (cb.value === window.APP_CONFIG.PROTESI_PDF) cb.checked = true;
+            });
+          }
+        });
+
+        // Sincronizza campo "Intervento proposto" con le selezioni effettuate
+        const selectedNames = Array.from(selectedSpecifics).map(cb => cb.dataset.name);
+        const interventoInput = document.getElementById('paz-intervento');
+        if (interventoInput) {
+          interventoInput.value = selectedNames.join(', ');
+        }
+      });
+
+      // Handle Clinic Selection in TAB 2 (disable Anesthesia for External)
+      clinicSelect.addEventListener('change', (e) => {
+        const isExternal = e.target.value === 'external';
+        const checkboxes = document.querySelectorAll('.tab2-checkbox');
+        checkboxes.forEach(cb => {
+          if (cb.value === window.APP_CONFIG.ANESTESIA_PDF) {
+            if (isExternal) {
+              cb.checked = false;
+              cb.parentElement.style.opacity = '0.5';
+            } else {
+              cb.checked = true;
+              cb.parentElement.style.opacity = '1';
+            }
+          }
+          if (cb.value === window.APP_CONFIG.IBAN_PDF) {
+            cb.checked = isExternal;
+          }
+        });
+      });
+
+      function setStatus(msg, type = 'info') {
+        statusEl.textContent = msg;
+        statusEl.className = '';
+        if (type === 'error') statusEl.classList.add('status-error');
+        if (type === 'success') statusEl.classList.add('status-success');
+      }
+
+      // --- GENERATE AND PRINT ROUTINE ---
+      // Gestione Maschera Data (GG/MM/AAAA) - Versione Semplificata
+      function applyDateMask(id) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        
+        input.addEventListener('input', (e) => {
+          let val = e.target.value.replace(/\D/g, ''); // Solo numeri
+          if (val.length > 8) val = val.slice(0, 8);
+          
+          let res = '';
+          if (val.length > 0) {
+            res += val.slice(0, 2);
+            if (val.length > 2) {
+              res += '/' + val.slice(2, 4);
+              if (val.length > 4) {
+                res += '/' + val.slice(4, 8);
+              }
+            }
+          }
+          e.target.value = res;
+        });
+      }
+
+      applyDateMask('paz-data-nascita');
+      applyDateMask('paz-data-intervento');
+
+      printBtn.addEventListener('click', async () => {
+        if (!window.APP_CONFIG) {
+          setStatus('Errore: config.js mancante o non valido.', 'error');
+          progressContainer.classList.add('visible');
+          return;
+        }
+
+        let files = [];
+
+        // Determina quale TAB è attualmente attiva per processare la logica giusta
+        const activeTab = document.querySelector('.tab-panel.active').id;
+
+        if (activeTab === 'tab-schede') {
+          // Prende solo le schede selezionate liberamente
+          const selected = document.querySelectorAll('.tab1-checkbox:checked');
+          selected.forEach(cb => files.push(cb.value));
+
+        } else if (activeTab === 'tab-interventi') {
+          // Prende solo le schede base selezionate dai checkbox (che ora includono intervento e protesi se selezionati)
+          const selected = document.querySelectorAll('.tab2-checkbox:checked');
+          selected.forEach(cb => files.push(cb.value));
+
+          // Aggiungi Interventi Specifici selezionati
+          const selectedSpecifics = document.querySelectorAll('.tab2-intervention-specific-checkbox:checked');
+          let requiresProtesiInterventi = false;
+
+          selectedSpecifics.forEach(cb => {
+            if (!files.includes(cb.value)) {
+              files.push(cb.value);
+            }
+            // Verifica se uno degli interventi richiede il modulo protesi specifico per interventi
+            const name = cb.dataset.name;
+            if (window.APP_CONFIG.BREAST_INTERVENTIONS_REQUIRING_PROTESI &&
+              window.APP_CONFIG.BREAST_INTERVENTIONS_REQUIRING_PROTESI.includes(name)) {
+              requiresProtesiInterventi = true;
+            }
+          });
+
+          if (requiresProtesiInterventi && window.APP_CONFIG.PROTESI_INTERVENTI_PDF && !files.includes(window.APP_CONFIG.PROTESI_INTERVENTI_PDF)) {
+            files.push(window.APP_CONFIG.PROTESI_INTERVENTI_PDF);
+          }
+          // Aggiungi IBAN se in sede esterna (se non è già tra i checkbox)
+          const isExternalClinic = clinicSelect.value === 'external';
+          if (isExternalClinic && window.APP_CONFIG.IBAN_PDF && !files.includes(window.APP_CONFIG.IBAN_PDF)) {
+            files.push(window.APP_CONFIG.IBAN_PDF);
+          }
+
+        } else if (activeTab === 'tab-aicpe') {
+          // Prende solo il singolo consenso AICPE selezionato
+          if (aicpeSelect.value) {
+            files.push(aicpeSelect.value);
+          }
+
+        } else if (activeTab === 'tab-locale') {
+          // Logica Cablata per Interventi in Locale
+          files = [...(window.APP_CONFIG.INTERVENTI_LOCALE_FILES || [])];
+
+        } else if (activeTab === 'tab-advisor') {
+          // Logica Cablata per Advisor
+          files = [...(window.APP_CONFIG.ADVISOR_FILES || [])];
+        } else if (activeTab === 'tab-liberatorie') {
+          const selected = document.querySelectorAll('.tab6-checkbox:checked');
+          selected.forEach(cb => files.push(cb.value));
+
+        } else if (activeTab === 'tab-certificati') {
+          const selected = document.querySelectorAll('.tab7-checkbox:checked');
+          selected.forEach(cb => files.push(cb.value));
+        }
+
+        if (files.length === 0) {
+          setStatus('Errore: Nessun file configurato nel sistema.', 'error');
+          progressContainer.classList.add('visible');
+          return;
+        }
+
+        const totalFiles = files.length;
+        const isSingleFileMode = files.length === 1;
+
+        // UI Feedback Start
+        printBtn.disabled = true;
+        progressContainer.classList.add('visible');
+        progressFill.style.width = '0%';
+        setStatus(`Connessione in corso... Preparazione di ${totalFiles} documenti.`);
+
+        try {
+          const { PDFDocument } = PDFLib;
+          const merged = await PDFDocument.create();
+          let done = 0;
+
+          // Fetch & Merge
+          for (const filename of files) {
+            setStatus(`Elaborazione: ${filename}`);
+
+            const url = `${window.APP_CONFIG.SUPABASE_URL}/storage/v1/object/public/${window.APP_CONFIG.BUCKET}/${encodeURIComponent(filename)}`;
+            const resp = await fetch(url);
+
+            if (!resp.ok) throw new Error(`Connessione fallita per ${filename} (Codice: ${resp.status})`);
+
+            const bytes = await resp.arrayBuffer();
+            const pdf = await PDFDocument.load(bytes);
+
+            const pages = await merged.copyPages(pdf, pdf.getPageIndices());
+            pages.forEach(p => merged.addPage(p));
+
+            done++;
+            progressFill.style.width = `${Math.round(done / totalFiles * 100)}%`;
+          }
+
+          // --- OVERLAY DATI PAZIENTE (per-documento) ---
+          const pazCognome = document.getElementById('paz-cognome').value.trim();
+          const pazNome = document.getElementById('paz-nome').value.trim();
+          const pazLuogoNascita = document.getElementById('paz-luogo-nascita').value.trim();
+          const pazDataNascita = document.getElementById('paz-data-nascita').value.trim();
+          const pazCitta = document.getElementById('paz-citta').value.trim();
+          const pazIntervento = document.getElementById('paz-intervento').value.trim();
+          const pazDataIntervento = document.getElementById('paz-data-intervento').value.trim();
+
+          if (pazCognome || pazNome || pazLuogoNascita || pazIntervento) {
+            setStatus('Compilazione dati paziente nel documento...', 'info');
+            const font = await merged.embedFont(PDFLib.StandardFonts.HelveticaBold);
+            const fontSize = 10;
+            const color = PDFLib.rgb(0.05, 0.05, 0.05);
+            const pages = merged.getPages();
+
+            // =========================================================
+            // PER_DOC_COORDS — Nome + Cognome per ogni documento
+            // Format: filename → { pageIndexRelative: [[fieldValue, x, y], ...], ... }
+            // y is measured from top; pdf-lib converts to height-y internally
+            // CALIBRATED: Cartella Clinica ✓  — Others: initial estimates
+            // =========================================================
+            // Nome completo per i moduli con campo unico "Il/La sottoscritto/a"
+            const fullName = [pazCognome, pazNome].filter(Boolean).join(' ');
+            const luogoEData = [pazLuogoNascita, pazDataNascita].filter(Boolean).join(', ');
+
+            const PER_DOC_COORDS = {
+              // ✓ CARTELLA CLINICA: campi separati (Cognome, Nome)
+              '1 cartella clinica .pdf': {
+                0: [
+                  [pazCognome, 102, 131], 
+                  [pazNome, 332.5, 131],
+                  [luogoEData, 155, 153],
+                  [pazIntervento, 153, 218],
+                  [pazDataIntervento, 443, 239]
+                ]
+              },
+              // ✓ SCHEDA ANAGRAFICA: campi separati (Cognome, Nome)
+              '0 SCHEDA ANAGRAFICA 2026.pdf': {
+                0: [[pazCognome, 93, 100], [pazNome, 329, 100]]
+              },
+              // -- Moduli con campo unico "Il/La sottoscritto/a" o "Io Sottoscritto/a" --
+              '2 consenso anestesia, liberatoria, richiesta cart clin.pdf': {
+                0: [[fullName, 138, 105]],
+                1: [[fullName, 130, 95]]
+              },
+              '3 Consenso Generico .pdf': {
+                0: [[fullName, 139, 109]]
+              },
+              '4 Lettera Dimissioni Pazienti.pdf': {
+                0: [[fullName, 265, 142]]
+              },
+              '5 Ricetta PRESCRIZIONE medica dimissione.pdf': {
+                0: [[fullName, 169, 219]]
+              },
+              '6 Tabella Medicazioni.pdf': {
+                0: [[fullName, 127, 85]]
+              },
+              // --- MODULI INTERVENTO (AICPE) ---
+              'ADDOMINOPLASTICA.pdf': { 0: [[fullName, 190, 218]] },
+              'BLEFAROPLASTICA.pdf': { 0: [[fullName, 190, 218]] },
+              'CERTIFICATO INT.MINORI NEW.pdf': { 0: [[fullName, 180, 220]] },
+              'LIFTING_DEL_VISO.pdf': { 0: [[fullName, 157, 198.3]] },
+              'LIPOSUZIONE.pdf': { 0: [[fullName, 180, 205]] },
+              'MASTOPLASTICA ADDITIVA.pdf': {
+                0: [[fullName, 188, 174]],
+                6: [[fullName, 157, 258]]
+              },
+              'MASTOPLASTICA RIDUTTIVA.pdf': { 0: [[fullName, 180, 205]] },
+              'OTOPLASTICA.pdf': { 0: [[fullName, 188, 195]] },
+              'RINOPLASTICA.pdf': { 0: [[fullName, 177, 185]] },
+              'MODULO POLITECH X INTERVENTI.pdf': {
+                0: [[pazNome, 68, 357], [pazCognome, 336, 357]]
+              },
+            };
+
+            // Walk through the files array and track starting page for each doc
+            let currentPageIdx = 0;
+            const finalPages = merged.getPages();
+
+            for (const filename of files) {
+              const docConfig = PER_DOC_COORDS[filename];
+              if (docConfig) {
+                // docConfig è un oggetto { pageOffsetRelativo: [[testo, x, y], ...] }
+                Object.keys(docConfig).forEach(relIdx => {
+                  const targetPageIdx = currentPageIdx + parseInt(relIdx);
+                  if (targetPageIdx < finalPages.length) {
+                    const p = finalPages[targetPageIdx];
+                    const { height } = p.getSize();
+                    docConfig[relIdx].forEach(([text, x, y]) => {
+                      if (text) p.drawText(text, { x, y: height - y, size: fontSize, font, color });
+                    });
+                  }
+                });
+              }
+
+              // Carichiamo il PDF temporaneamente per sapere il conteggio pagine reale:
+              const url = `${window.APP_CONFIG.SUPABASE_URL}/storage/v1/object/public/${window.APP_CONFIG.BUCKET}/${encodeURIComponent(filename)}`;
+              const resp = await fetch(url);
+              const bytes = await resp.arrayBuffer();
+              const tempPdf = await PDFLib.PDFDocument.load(bytes);
+              const originalPageCount = tempPdf.getPageCount();
+
+              currentPageIdx += originalPageCount;
+            }
+          }
+
+
+          setStatus('Assemblaggio del documento finale...', 'info');
+          const mergedBytes = await merged.save();
+          const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+          const blobUrl = URL.createObjectURL(blob);
+
+          setStatus(`${totalFiles} Documenti pronti. Apertura in corso...`, 'success');
+
+          // Open target
+          const newWindow = window.open(blobUrl, '_blank');
+          if (newWindow) {
+            setTimeout(() => {
+              newWindow.print();
+            }, 1500);
+          } else {
+            setStatus('Attenzione: Il browser ha bloccato la finestra a comparsa. Consenti i popup.', 'error');
+          }
+
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000 * 60 * 5);
+
+        } catch (e) {
+          setStatus(`Impossibile procedere: ${e.message}`, 'error');
+          console.error(e);
+        } finally {
+          printBtn.disabled = false;
+          // Hide progress slightly after completion unless there was an error
+          if (!statusEl.classList.contains('status-error')) {
+            setTimeout(() => {
+              progressContainer.classList.remove('visible');
+            }, 5000);
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
