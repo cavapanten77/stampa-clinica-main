@@ -15,6 +15,7 @@ window.APP_CONFIG = {
         'CERTIFICATO.pdf',
         'CONSENSO BTX-IAL.pdf',
         'CONSENSO MINORENNI.pdf'
+        'MODULO PRP.pdf',
     ],
 
     // Categoria: SCHEDE (Selezione granulare)
@@ -32,6 +33,7 @@ window.APP_CONFIG = {
         'TABELLA X SCHEDE INTERVENTI.pdf',
         'CONSENSO BTX-IAL.pdf',
         'CONSENSO MINORENNI.pdf'
+        'MODULO PRP.pdf',
     ],
 
     // Categoria: LIBERATORIE
