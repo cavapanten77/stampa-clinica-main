@@ -846,6 +846,10 @@
           <input class="dati-input" id="paz-citta" type="text" placeholder="Milano">
         </div>
         <div class="dati-input-group">
+          <span class="dati-input-label">Via</span>
+          <input class="dati-input" id="paz-via" type="text" placeholder="Via Roma 1">
+        </div>
+        <div class="dati-input-group">
           <span class="dati-input-label">Diagnosi</span>
           <input class="dati-input" id="paz-diagnosi" type="text" placeholder="...">
         </div>
@@ -1365,6 +1369,7 @@
           const pazLuogoNascita = document.getElementById('paz-luogo-nascita').value.trim();
           const pazDataNascita = document.getElementById('paz-data-nascita').value.trim();
           const pazCitta = document.getElementById('paz-citta').value.trim();
+          const pazVia = document.getElementById('paz-via').value.trim();
           const pazIntervento = document.getElementById('paz-intervento').value.trim();
           const pazDataIntervento = document.getElementById('paz-data-intervento').value.trim();
 
@@ -1410,7 +1415,8 @@
                   [fullName, 139, 109],
                   [pazLuogoNascita, 120, 126],
                   [pazDataNascita, 430, 126],
-                  [pazCitta, 120, 144]
+                  [pazCitta, 120, 144],
+                  [pazVia, 430, 144]
                 ]
               },
               '4 Lettera Dimissioni Pazienti.pdf': {
