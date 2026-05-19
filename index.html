@@ -1445,7 +1445,11 @@
           const pazLuogoNascita = document.getElementById('paz-luogo-nascita').value.trim();
           const pazDataNascita = document.getElementById('paz-data-nascita').value.trim();
           const pazCitta = document.getElementById('paz-citta').value.trim();
-          const pazVia = document.getElementById('paz-via').value.trim();
+          const pazViaRaw = document.getElementById('paz-via').value.trim();
+          // Estrai Nr. Civico dal fondo della via (es. "Via Roma 16" → via="Via Roma", civico="16")
+          const viaMatch = pazViaRaw.match(/^(.*?)\s+(\d+\w*)$/);
+          const pazVia = viaMatch ? viaMatch[1] : pazViaRaw;
+          const pazNrCivico = viaMatch ? viaMatch[2] : '';
           const pazIntervento = document.getElementById('paz-intervento').value.trim();
           const pazDataIntervento = document.getElementById('paz-data-intervento').value.trim();
 
@@ -1534,12 +1538,13 @@
                   [pazLuogoNascita, 101, 377],
                   [pazDataNascita, 350, 377],
                   [pazVia, 58, 418],
+                  [pazNrCivico, 334, 418],
                   [pazCitta, 99, 438],
-                  [pazPolitechCap, 315, 443],
-                  [pazPolitechCf, 92, 402],
-                  [pazPolitechPiva, 319, 402],
-                  [pazPolitechEmail, 102, 462],
-                  [pazPolitechCellulare, 337, 482]
+                  [pazPolitechCap, 315, 441],
+                  [pazPolitechCf, 92, 400],
+                  [pazPolitechPiva, 319, 400],
+                  [pazPolitechEmail, 102, 460],
+                  [pazPolitechCellulare, 337, 480]
                 ]
               },
             };
