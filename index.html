@@ -1446,12 +1446,47 @@
           const pazDataNascita = document.getElementById('paz-data-nascita').value.trim();
           const pazCitta = document.getElementById('paz-citta').value.trim();
           const pazViaRaw = document.getElementById('paz-via').value.trim();
-          // Estrai Nr. Civico dal fondo della via (es. "Via Roma 16" → via="Via Roma", civico="16")
           const viaMatch = pazViaRaw.match(/^(.*?)\s+(\d+\w*)$/);
           const pazVia = viaMatch ? viaMatch[1] : pazViaRaw;
           const pazNrCivico = viaMatch ? viaMatch[2] : '';
           const pazIntervento = document.getElementById('paz-intervento').value.trim();
           const pazDataIntervento = document.getElementById('paz-data-intervento').value.trim();
+
+          // --- CALCOLO CODICE FISCALE ---
+          function calcolaCodiceFiscale(cognome, nome, dataNascita, sesso) {
+            const vocali = 'AEIOU';
+            const consonanti = 'BCDFGHJKLMNPQRSTVWXYZ';
+            function codificaNome(str, isNome) {
+              str = str.toUpperCase().replace(/[^A-Z]/g, '');
+              const cons = str.split('').filter(c => consonanti.includes(c));
+              const voc = str.split('').filter(c => vocali.includes(c));
+              let lettere = [...cons, ...voc, 'X', 'X', 'X'];
+              if (isNome && cons.length >= 4) lettere = [cons[0], cons[2], cons[3]];
+              return lettere.slice(0, 3).join('');
+            }
+            const mesi = 'ABCDEHLMPRST';
+            const pari = [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,2,4,18,12,20,11,3,16,9,17,19,15,6,7,10,21,1,13,5,22,24,23,8,14];
+            const dispari = [1,0,5,7,9,13,15,17,19,21,2,4,18,12,20,11,3,16,9,17,19,15,6,7,10,21,1,13,5,22,24,23,8,14,0,1,2,3,4,5,6,7,8,9];
+            try {
+              const parts = dataNascita.split('/');
+              if (parts.length !== 3) return '';
+              const [gg, mm, aaaa] = parts;
+              const cf = codificaNome(cognome, false) +
+                         codificaNome(nome, true) +
+                         aaaa.slice(2) +
+                         mesi[parseInt(mm)-1] +
+                         (sesso === 'F' ? String(parseInt(gg)+40).padStart(2,'0') : gg.padStart(2,'0'));
+              let somma = 0;
+              for (let i = 0; i < 15; i++) {
+                const c = cf[i];
+                const val = c >= '0' && c <= '9' ? parseInt(c) : c.charCodeAt(0) - 65;
+                somma += i % 2 === 0 ? dispari[val] : pari[val];
+              }
+              return cf + String.fromCharCode(65 + (somma % 26));
+            } catch(e) { return ''; }
+          }
+          const pazSesso = document.getElementById('paz-sesso')?.value.trim().toUpperCase() || 'M';
+          const cfCalcolato = (pazCognome && pazNome && pazDataNascita) ? calcolaCodiceFiscale(pazCognome, pazNome, pazDataNascita, pazSesso) : '';
 
           if (pazCognome || pazNome || pazLuogoNascita || pazIntervento) {
             setStatus('Compilazione dati paziente nel documento...', 'info');
@@ -1532,18 +1567,18 @@
               'RINOPLASTICA.pdf': { 0: [[fullName, 177, 185]] },
               'MODULO PRP.pdf': {
                 0: [
-                  [pazCognome, 453, 49.5],
-                  [pazDataNascita, 455, 74.5]
+                  [pazCognome, 453, 48],
+                  [pazDataNascita, 455, 74]
                 ],
                 1: [
-                  [pazCognome, 55, 311.5],
-                  [pazNome, 274, 311.5],
-                  [pazLuogoNascita, 425.5, 314],
-                  [pazDataNascita, 425.5, 294]
+                  [pazCognome, 55, 310],
+                  [pazNome, 274, 310],
+                  [pazLuogoNascita, 425.5, 313.5],
+                  [pazDataNascita, 425.5, 293.5]
                 ],
                 2: [
                   [pazCognome, 121, 209],
-                  [pazPolitechCf, 339, 211],
+                  [cfCalcolato, 346, 208],
                   [pazCognome, 93, 231],
                   [pazNome, 316, 231],
                   [pazDataNascita, 96, 252],
